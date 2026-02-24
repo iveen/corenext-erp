@@ -1,0 +1,39 @@
+name: CoreNxt Security Scan
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly scan
+  push:
+    paths:
+      - 'backend/requirements.txt'
+      - 'frontend/package-lock.json'
+
+jobs:
+  dependency-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Scan Python Dependencies (Safety)
+        run: |
+          pip install safety
+          cd backend
+          safety check -r requirements.txt --output json > safety-report.json
+        continue-on-error: true
+
+      - name: Scan Node Dependencies (npm audit)
+        run: |
+          cd frontend
+          npm audit --audit-level=high --json > npm-audit-report.json
+        continue-on-error: true
+
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            backend/safety-report.json
+            frontend/npm-audit-report.json
+          retention-days: 90
