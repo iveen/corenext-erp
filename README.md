@@ -1,3 +1,5 @@
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 # CoreNxt ERP (Phase 1)
 
 **Project Status:** In Development  
